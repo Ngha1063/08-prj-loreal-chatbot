@@ -1,18 +1,71 @@
-/* DOM elements */
 const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 const chatWindow = document.getElementById("chatWindow");
 
-// Set initial message
-chatWindow.textContent = "👋 Hello! How can I help you today?";
+/* 🔹 STORE CONVERSATION HISTORY */
+let messages = [
+  {
+    role: "system",
+    content:
+      "You are a L’Oréal beauty assistant. Only answer questions about L’Oréal products, skincare routines, haircare, and beauty recommendations. If a question is unrelated, politely refuse and redirect to beauty topics."
+  }
+];
 
-/* Handle form submit */
-chatForm.addEventListener("submit", (e) => {
+/* Initial message */
+appendMessage("ai", "👋 Hello! Ask me anything about L’Oréal products, skincare, or beauty routines.");
+
+/* Append messages */
+function appendMessage(role, text) {
+  const msgDiv = document.createElement("div");
+  msgDiv.classList.add("msg", role);
+  msgDiv.textContent = text;
+  chatWindow.appendChild(msgDiv);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
+
+/* Handle submit */
+chatForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // When using Cloudflare, you'll need to POST a `messages` array in the body,
-  // and handle the response using: data.choices[0].message.content
+  const userText = userInput.value.trim();
+  if (!userText) return;
 
-  // Show message
-  chatWindow.innerHTML = "Connect to the OpenAI API for a response!";
+  /* Display user message */
+  appendMessage("user", userText);
+
+  /* EXTRA CREDIT: show question above response */
+  const questionDiv = document.createElement("div");
+  questionDiv.classList.add("msg");
+  questionDiv.style.fontWeight = "bold";
+  questionDiv.textContent = `You asked: ${userText}`;
+  chatWindow.appendChild(questionDiv);
+
+  userInput.value = "";
+
+  /* Add to history */
+  messages.push({ role: "user", content: userText });
+
+  try {
+    const response = await fetch("YOUR_CLOUDFLARE_WORKER_URL_HERE", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ messages })
+    });
+
+    const data = await response.json();
+
+    const aiReply = data.choices[0].message.content;
+
+    /* Add AI response */
+    appendMessage("ai", aiReply);
+
+    /* Save response to history */
+    messages.push({ role: "assistant", content: aiReply });
+
+  } catch (error) {
+    appendMessage("ai", "⚠️ Error connecting to beauty advisor. Please try again.");
+    console.error(error);
+  }
 });

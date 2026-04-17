@@ -46,26 +46,33 @@ chatForm.addEventListener("submit", async (e) => {
   messages.push({ role: "user", content: userText });
 
   try {
-    const response = await fetch("08-prj-loreal-chatbot.nghanathe1.workers.dev", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ messages })
-    });
+  const response = await fetch("https://08-prj-loreal-chatbot.nghanathe1.workers.dev", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ messages })
+  });
 
-    const data = await response.json();
+  const data = await response.json();
 
-    const aiReply = data.choices[0].message.content;
+  console.log("Worker response:", data);
 
-    /* Add AI response */
-    appendMessage("ai", aiReply);
-
-    /* Save response to history */
-    messages.push({ role: "assistant", content: aiReply });
-
-  } catch (error) {
-    appendMessage("ai", "⚠️ Error connecting to beauty advisor. Please try again.");
-    console.error(error);
+  if (!response.ok) {
+    throw new Error(data.error?.message || "Worker request failed");
   }
-});
+
+  const aiReply = data.choices?.[0]?.message?.content;
+
+  if (!aiReply) {
+    throw new Error("No response from AI");
+  }
+
+  appendMessage("ai", aiReply);
+
+  messages.push({ role: "assistant", content: aiReply });
+
+} catch (error) {
+  console.error(error);
+  appendMessage("ai", "⚠️ Error connecting to beauty advisor. Please try again.");
+}

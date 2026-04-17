@@ -46,7 +46,7 @@ chatForm.addEventListener("submit", async (e) => {
   messages.push({ role: "user", content: userText });
 
   try {
-    const response = await fetch("YOUR_CLOUDFLARE_WORKER_URL_HERE", {
+    const response = await fetch("08-prj-loreal-chatbot.nghanathe1.workers.dev", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

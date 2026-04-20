@@ -46,7 +46,7 @@ chatForm.addEventListener("submit", async (e) => {
   messages.push({ role: "user", content: userText });
 
   try {
-  const response = await fetch("https://08-prj-loreal-chatbot.nghanathe1.workers.dev", {
+  const response = await fetch("https://08-prj-loreal-chatbot.nghanathe1.workers.dev/api/chat", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

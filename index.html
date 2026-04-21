@@ -1,58 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Assistant</title>
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
-      rel="stylesheet"
-    />
+    <title>L'Oréal Smart Beauty Advisor</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
-
   <body>
     <div class="page-wrapper">
-      <!------- Header / Branding ------->
+
       <header class="site-header">
-  <img src="img/loreal-logo.png" alt="L'Oréal Logo" class="logo" />
-  <h1 class="site-title">L’Oréal Smart Beauty Advisor</h1>
-</header>
+        <img src="img/loreal-logo.png" alt="L'Oréal Logo" class="logo" />
+        <h1 class="site-title">L'Oréal Smart Beauty Advisor</h1>
+        <button class="rtl-toggle" onclick="toggleRTL()" title="Toggle RTL">⇄ RTL</button>
+      </header>
 
-      <!------- Chat Area ------->
-      <main>
-        <section class="chatbox">
-          <div id="chatWindow" class="chat-window">
-            <!-- messages will be appended here via JS -->
+      <div class="app-layout">
+
+        <aside class="catalog-panel">
+          <div class="catalog-header">
+            <h2 class="panel-title">Products</h2>
+            <div class="catalog-controls">
+              <div class="search-wrap">
+                <span class="material-icons search-icon">search</span>
+                <input type="text" id="searchInput" placeholder="Search products…" autocomplete="off" />
+              </div>
+              <select id="categoryFilter">
+                <option value="all">All Categories</option>
+                <option value="Skincare">Skincare</option>
+                <option value="Haircare">Haircare</option>
+                <option value="Makeup">Makeup</option>
+                <option value="Fragrance">Fragrance</option>
+              </select>
+            </div>
           </div>
+          <div id="productGrid" class="product-grid"></div>
+        </aside>
 
-          <form id="chatForm" class="chat-form">
-            <label for="userInput" class="visually-hidden">Message</label>
-            <input
-              id="userInput"
-              name="userInput"
-              type="text"
-              placeholder="Ask me about products or routines…"
-              autocomplete="off"
-              required
-            />
-            <button type="submit" id="sendBtn">
-              <span class="material-icons">send</span>
-              <span class="visually-hidden">Send</span>
+        <main class="main-panel">
+
+          <section class="selected-section">
+            <div class="selected-header">
+              <h2 class="panel-title">Selected Products <span id="selectedCount" class="count-badge">0</span></h2>
+              <button class="clear-btn" onclick="clearAll()">Clear all</button>
+            </div>
+            <ul id="selectedList" class="selected-list">
+              <li class="empty-state" id="emptyState">No products selected yet — click cards to add them.</li>
+            </ul>
+            <button id="generateBtn" class="generate-btn" disabled onclick="generateRoutine()">
+              <span class="material-icons">auto_awesome</span>
+              Generate My Routine
             </button>
-          </form>
-        </section>
-      </main>
+          </section>
 
-      <!------- Footer Links ------->
+          <section class="chatbox">
+            <div id="chatWindow" class="chat-window">
+            </div>
+            <form id="chatForm" class="chat-form">
+              <label for="userInput" class="visually-hidden">Message</label>
+              <input
+                id="userInput"
+                name="userInput"
+                type="text"
+                placeholder="Ask me about products or routines…"
+                autocomplete="off"
+                required
+              />
+              <button type="submit" id="sendBtn">
+                <span class="material-icons">send</span>
+                <span class="visually-hidden">Send</span>
+              </button>
+            </form>
+          </section>
+
+        </main>
+      </div>
+
+      <div id="descModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalName" onclick="closeModal(event)">
+        <div class="modal-card">
+          <button class="modal-close" onclick="closeModalBtn()"><span class="material-icons">close</span></button>
+          <p class="modal-brand" id="modalBrand"></p>
+          <h3 class="modal-name" id="modalName"></h3>
+          <span class="modal-category" id="modalCategory"></span>
+          <p class="modal-desc" id="modalDesc"></p>
+          <button class="modal-select-btn" id="modalSelectBtn" onclick="toggleFromModal()"></button>
+        </div>
+      </div>
+
       <footer class="site-footer">
-        <p>&copy; 2025 Company Name. All rights reserved.</p>
+        <p>&copy; 2025 L'Oréal. All rights reserved.</p>
         <nav>
-          <!-- These URLs are placeholders -->
           <a href="#">Privacy Policy</a>
           <a href="#">Terms of Use</a>
           <a href="#">Contact</a>
@@ -60,8 +99,6 @@
       </footer>
     </div>
 
-    <!-- secrets.js can be removed when using Cloudflare Workers for API requests -->
-    <script src="secrets.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
